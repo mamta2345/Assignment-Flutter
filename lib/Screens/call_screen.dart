@@ -8,22 +8,23 @@ class CallScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final targetUser = userId == 'UserA' ? 'UserB' : 'UserA';
-
+    String targetUser = userId == 'UserA' ? 'UserB' : 'UserA';
     return Scaffold(
-      appBar: AppBar(title: Text('Logged in as $userId')),
+      appBar: AppBar(title: Text('Welcome $userId')),
       body: Center(
-        child: ElevatedButton.icon(
-          icon: const Icon(Icons.video_call),
-          label: Text("Call $targetUser"),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => IncomingCallScreen(callerId: userId),
-              ),
-            );
-          },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton.icon(
+              icon: const Icon(Icons.video_call),
+              label: Text('Call $targetUser'),
+              onPressed: () {
+                // Simulate incoming call for demo
+                Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => IncomingCallScreen(callerId: userId)));
+              },
+            ),
+          ],
         ),
       ),
     );

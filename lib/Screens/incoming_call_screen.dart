@@ -9,41 +9,38 @@ class IncomingCallScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.teal.shade50,
+      backgroundColor: Colors.teal[50],
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text("Incoming Video Call", style: TextStyle(fontSize: 24)),
-            const SizedBox(height: 12),
+            const Text("Incoming Call", style: TextStyle(fontSize: 24)),
+            const SizedBox(height: 10),
             Text("From $callerId", style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FloatingActionButton(
+                  heroTag: "decline",
                   backgroundColor: Colors.red,
-                  onPressed: () => Navigator.pop(context),
                   child: const Icon(Icons.call_end),
+                  onPressed: () => Navigator.pop(context),
                 ),
-                const SizedBox(width: 40),
+                const SizedBox(width: 50),
                 FloatingActionButton(
+                  heroTag: "accept",
                   backgroundColor: Colors.green,
+                  child: const Icon(Icons.call),
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(
-                        builder:
-                            (_) => const VideoCallScreen(
-                              channelName: 'demo_channel',
-                            ),
-                      ),
+                      MaterialPageRoute(builder: (_) => const VideoCallScreen(channelName: 'demo_channel')),
                     );
                   },
-                  child: const Icon(Icons.call),
                 ),
               ],
-            ),
+            )
           ],
         ),
       ),

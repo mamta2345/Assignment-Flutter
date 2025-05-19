@@ -13,27 +13,15 @@ class UserSelectionScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const CallScreen(userId: 'UserA'),
-                  ),
-                );
-              },
               child: const Text("Login as User A"),
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => CallScreen(userId: 'UserA'))),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const CallScreen(userId: 'UserB'),
-                  ),
-                );
-              },
               child: const Text("Login as User B"),
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => CallScreen(userId: 'UserB'))),
             ),
           ],
         ),

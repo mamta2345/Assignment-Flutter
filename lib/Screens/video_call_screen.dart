@@ -1,121 +1,97 @@
+// lib/Screens/video_call_screen.dart
+
 import 'package:flutter/material.dart';
-import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class VideoCallScreen extends StatefulWidget {
   final String channelName;
 
-  const VideoCallScreen({super.key, required this.channelName});
+  const VideoCallScreen({Key? key, required this.channelName})
+    : super(key: key);
 
   @override
   State<VideoCallScreen> createState() => _VideoCallScreenState();
 }
 
 class _VideoCallScreenState extends State<VideoCallScreen> {
-  late RtcEngine engine;
-  int? remoteUid;
   bool muted = false;
-
-  @override
-  void initState() {
-    super.initState();
-    initAgora();
-  }
-
-  Future<void> initAgora() async {
-    await [Permission.camera, Permission.microphone].request();
-
-    engine = createAgoraRtcEngine();
-    await engine.initialize(
-      RtcEngineContext(appId: "YOUR_AGORA_APP_ID"),
-    ); // Replace with your Agora App ID
-    await engine.enableVideo();
-    await engine.startPreview();
-
-    engine.registerEventHandler(
-      RtcEngineEventHandler(
-        onUserJoined: (connection, uid, elapsed) {
-          setState(() => remoteUid = uid);
-        },
-        onUserOffline: (connection, uid, reason) {
-          setState(() => remoteUid = null);
-        },
-      ),
-    );
-
-    await engine.joinChannel(
-      token: "YOUR_TEMP_TOKEN", // Replace with token (or "" if not using)
-      channelId: widget.channelName,
-      uid: 0,
-      options: const ChannelMediaOptions(),
-    );
-  }
-
-  @override
-  void dispose() {
-    engine.leaveChannel();
-    engine.release();
-    super.dispose();
-  }
+  bool frontCamera = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
-          remoteUid != null
-              ? AgoraVideoView(
-                controller: VideoViewController.remote(
-                  // engine: engine,
-                  // uid: remoteUid!,
-                  // channelId: widget.channelName,
-                  rtcEngine: engine,
-                  canvas: const VideoCanvas(),
-                  connection: RtcConnection(
-                    channelId: widget.channelName,
-                    localUid: 0,
-                  ),
-                ),
-              )
-              : const Center(child: Text("Waiting for other user...")),
+          // Simulated Remote Video Feed
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            color: Colors.grey[900],
+            child: const Center(
+              child: Text(
+                'Remote Video',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            ),
+          ),
+
+          // Simulated Local Video Preview (small box)
           Positioned(
             top: 40,
-            left: 20,
-            child: SizedBox(
-              width: 120,
-              height: 160,
-              child: AgoraVideoView(
-                controller: VideoViewController(
-                  rtcEngine: engine,
-                  canvas: const VideoCanvas(uid: 0),
+            right: 20,
+            child: Container(
+              width: 100,
+              height: 150,
+              decoration: BoxDecoration(
+                color: Colors.grey[800],
+                border: Border.all(color: Colors.white),
+              ),
+              child: const Center(
+                child: Text(
+                  'Local Video',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 24.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  IconButton(
-                    icon: Icon(muted ? Icons.mic_off : Icons.mic),
-                    onPressed: () {
-                      engine.muteLocalAudioStream(!muted);
-                      setState(() => muted = !muted);
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.call_end, color: Colors.red),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.switch_camera),
-                    onPressed: () => engine.switchCamera(),
-                  ),
-                ],
-              ),
+
+          // Control Buttons
+          Positioned(
+            bottom: 40,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                FloatingActionButton(
+                  heroTag: "btn1",
+                  backgroundColor: muted ? Colors.red : Colors.blue,
+                  onPressed: () {
+                    setState(() {
+                      muted = !muted;
+                    });
+                  },
+                  child: Icon(muted ? Icons.mic_off : Icons.mic),
+                ),
+                FloatingActionButton(
+                  heroTag: "btn2",
+                  backgroundColor: Colors.red,
+                  onPressed: () {
+                    Navigator.pop(context); // End call
+                  },
+                  child: const Icon(Icons.call_end),
+                ),
+                FloatingActionButton(
+                  heroTag: "btn3",
+                  backgroundColor: Colors.blue,
+                  onPressed: () {
+                    setState(() {
+                      frontCamera = !frontCamera;
+                    });
+                  },
+                  child: const Icon(Icons.cameraswitch),
+                ),
+              ],
             ),
           ),
         ],
