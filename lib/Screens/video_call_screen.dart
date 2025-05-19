@@ -1,20 +1,18 @@
-// lib/Screens/video_call_screen.dart
-
 import 'package:flutter/material.dart';
 
 class VideoCallScreen extends StatefulWidget {
   final String channelName;
 
-  const VideoCallScreen({Key? key, required this.channelName})
-    : super(key: key);
+  const VideoCallScreen({super.key, required this.channelName});
 
   @override
   State<VideoCallScreen> createState() => _VideoCallScreenState();
 }
 
 class _VideoCallScreenState extends State<VideoCallScreen> {
-  bool muted = false;
-  bool frontCamera = true;
+  bool isMuted = false;
+  bool isFrontCamera = true;
+  bool inCall = true;
 
   @override
   Widget build(BuildContext context) {
@@ -23,15 +21,10 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       body: Stack(
         children: [
           // Simulated Remote Video Feed
-          Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: Colors.grey[900],
-            child: const Center(
-              child: Text(
-                'Remote Video',
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ),
+          Center(
+            child: Text(
+              inCall ? 'Remote Video' : 'Call Ended',
+              style: const TextStyle(color: Colors.white, fontSize: 20),
             ),
           ),
 
@@ -42,20 +35,17 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
             child: Container(
               width: 100,
               height: 150,
-              decoration: BoxDecoration(
-                color: Colors.grey[800],
-                border: Border.all(color: Colors.white),
-              ),
-              child: const Center(
+              color: Colors.grey,
+              child: Center(
                 child: Text(
-                  'Local Video',
-                  style: TextStyle(color: Colors.white),
+                  isFrontCamera ? 'Front Cam' : 'Back Cam',
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
             ),
           ),
 
-          // Control Buttons
+          // Bottom control buttons
           Positioned(
             bottom: 40,
             left: 0,
@@ -63,30 +53,40 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                // Mute button
                 FloatingActionButton(
                   heroTag: "btn1",
-                  backgroundColor: muted ? Colors.red : Colors.blue,
+                  backgroundColor: isMuted ? Colors.red : Colors.blue,
                   onPressed: () {
                     setState(() {
-                      muted = !muted;
+                      isMuted = !isMuted;
                     });
                   },
-                  child: Icon(muted ? Icons.mic_off : Icons.mic),
+                  child: Icon(isMuted ? Icons.mic_off : Icons.mic),
                 ),
+
+                // End call
                 FloatingActionButton(
                   heroTag: "btn2",
                   backgroundColor: Colors.red,
                   onPressed: () {
-                    Navigator.pop(context); // End call
+                    setState(() {
+                      inCall = false;
+                    });
+                    Future.delayed(const Duration(seconds: 1), () {
+                      Navigator.pop(context);
+                    });
                   },
                   child: const Icon(Icons.call_end),
                 ),
+
+                // Switch camera
                 FloatingActionButton(
                   heroTag: "btn3",
                   backgroundColor: Colors.blue,
                   onPressed: () {
                     setState(() {
-                      frontCamera = !frontCamera;
+                      isFrontCamera = !isFrontCamera;
                     });
                   },
                   child: const Icon(Icons.cameraswitch),
